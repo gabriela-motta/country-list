@@ -1,25 +1,42 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { Component } from "react";
+import CountryList from "./components/CountryList";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+class App extends Component {
+  state = {
+    countries: [],
+    search: null,
+  };
+
+  componentDidMount() {
+    fetch("https://restcountries.eu/rest/v2/all")
+      .then((res) => res.json())
+      .then((data) => {
+        this.setState({ countries: data });
+      })
+      .catch(console.log);
+  }
+
+  handleSearch = (event) => {
+    let keyword = event.target.value;
+    this.setState({ search: keyword });
+  };
+
+  render() {
+    // eslint-disable-next-line array-callback-return
+    const countriesProp = this.state.countries.filter((data) => {
+      if (this.state.search == null) {
+        return data;
+      } else if (
+        data.name.toLowerCase().includes(this.state.search.toLowerCase())
+      ) {
+        return data;
+      }
+    });
+
+    return (
+      <CountryList countries={countriesProp} handleSearch={this.handleSearch} />
+    );
+  }
 }
 
 export default App;
